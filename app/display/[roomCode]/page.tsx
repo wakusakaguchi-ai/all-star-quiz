@@ -45,7 +45,7 @@ export default function DisplayPage({ params }: Props) {
           <span className="bg-white text-red-700 font-mono font-black text-xl px-4 py-1 rounded-lg tracking-widest">
             {roomCode}
           </span>
-          <span className="text-sm bg-white bg-opacity-20 px-3 py-1 rounded-full">
+          <span className="text-sm bg-white text-red-700 font-bold px-3 py-1 rounded-full">
             👥 {participants.length}名
           </span>
         </div>
