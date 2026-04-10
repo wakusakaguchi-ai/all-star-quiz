@@ -5,12 +5,12 @@ import type { RoomState, Participant } from '@/lib/types'
 
 type Props = { params: Promise<{ roomCode: string }> }
 
-const CHOICE_COLORS: Record<string, string> = {
-  A: 'bg-red-500 hover:bg-red-600 active:bg-red-700',
-  B: 'bg-blue-500 hover:bg-blue-600 active:bg-blue-700',
-  C: 'bg-green-500 hover:bg-green-600 active:bg-green-700',
-  D: 'bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600',
-}
+const CHOICES = [
+  { key: 'A', num: '①', bg: '#e03030', shadow: '#8b0000' },
+  { key: 'B', num: '②', bg: '#1a6fd4', shadow: '#0a3a7a' },
+  { key: 'C', num: '③', bg: '#1a9e3a', shadow: '#0a5a1a' },
+  { key: 'D', num: '④', bg: '#d4a000', shadow: '#7a5a00' },
+]
 
 export default function JoinPage({ params }: Props) {
   const { roomCode } = use(params)
@@ -26,13 +26,11 @@ export default function JoinPage({ params }: Props) {
     if (!res.ok) return
     const newState: RoomState = await res.json()
     setState(prev => {
-      // ラウンドが変わったら自分の回答をリセット
       if (prev && prev.session.round_number !== newState.session.round_number) {
         setMyChoice(null)
       }
       return newState
     })
-    // 自分のスコアを最新に同期
     if (participant) {
       const updated = newState.participants.find(p => p.id === participant.id)
       if (updated) setParticipant(updated)
@@ -74,18 +72,29 @@ export default function JoinPage({ params }: Props) {
 
   if (!state) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-red-600 to-yellow-400 flex items-center justify-center">
-        <p className="text-white text-xl">読込中...</p>
+      <main className="tv-bg min-h-screen flex items-center justify-center">
+        <p className="text-white text-xl font-bold">読込中...</p>
       </main>
     )
   }
 
+  // 名前入力画面
   if (!participant) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-red-600 to-yellow-400 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm">
-          <h1 className="text-2xl font-black text-center text-red-600 mb-1">🎉 参加</h1>
-          <p className="text-center text-gray-400 text-sm mb-6">ルーム: <span className="font-mono font-bold text-black">{roomCode}</span></p>
+      <main className="tv-bg min-h-screen flex items-center justify-center p-4">
+        <div style={{
+          background: 'linear-gradient(180deg, #1a2a8a 0%, #0d1a60 100%)',
+          border: '2px solid rgba(100,150,255,0.5)',
+          borderRadius: 24,
+          padding: 32,
+          width: '100%',
+          maxWidth: 360,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+        }}>
+          <h1 className="text-white text-center font-black text-2xl mb-1">🎉 オールスター感謝祭</h1>
+          <p className="text-center mb-6" style={{ color: '#aac0ff', fontSize: 14 }}>
+            ルーム: <span className="font-mono font-black text-white">{roomCode}</span>
+          </p>
           <input
             type="text"
             value={name}
@@ -93,17 +102,19 @@ export default function JoinPage({ params }: Props) {
             onKeyDown={e => e.key === 'Enter' && joinRoom()}
             placeholder="あなたの名前"
             maxLength={20}
-            className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-lg text-center focus:outline-none focus:border-red-400 mb-4"
+            className="w-full rounded-full px-4 py-3 text-lg text-center font-bold mb-4 focus:outline-none"
+            style={{ background: 'rgba(255,255,255,0.15)', color: 'white', border: '2px solid rgba(150,180,255,0.5)' }}
             autoFocus
           />
           <button
             onClick={joinRoom}
             disabled={loading || !name.trim()}
-            className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-4 rounded-xl text-lg transition"
+            className="w-full rounded-full py-4 font-black text-white text-lg transition"
+            style={{ background: loading || !name.trim() ? '#555' : 'linear-gradient(180deg, #e03030 0%, #a00000 100%)', boxShadow: '0 4px 15px rgba(200,0,0,0.4)' }}
           >
-            参加する
+            参加する！
           </button>
-          {error && <p className="text-red-500 text-center mt-3 text-sm">{error}</p>}
+          {error && <p className="text-red-400 text-center mt-3 text-sm">{error}</p>}
         </div>
       </main>
     )
@@ -111,46 +122,59 @@ export default function JoinPage({ params }: Props) {
 
   const { session } = state
 
+  // 待機中
   if (session.status === 'waiting') {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-red-600 to-yellow-400 flex items-center justify-center p-4">
+      <main className="tv-bg min-h-screen flex items-center justify-center p-4">
         <div className="text-center text-white">
-          <p className="text-4xl mb-4">⏳</p>
-          <h2 className="text-2xl font-black mb-2">待機中</h2>
-          <p className="opacity-80">ホストが問題を出すまで待ってください</p>
-          <p className="mt-4 text-sm opacity-70">こんにちは、{participant.name}さん！</p>
+          <p className="text-5xl mb-4 sparkle-text">⭐</p>
+          <h2 className="text-2xl font-black mb-2">待機中...</h2>
+          <p style={{ color: '#aac0ff' }}>問題が出るまで待ってね！</p>
+          <p className="mt-4 font-bold">{participant.name} さん</p>
           {participant.score > 0 && (
-            <p className="mt-2 text-xl font-black">現在の得点: {participant.score}pt</p>
+            <div className="mt-4 rounded-2xl px-6 py-3" style={{ background: 'rgba(255,255,255,0.15)' }}>
+              <p style={{ color: '#aac0ff', fontSize: 12 }}>現在の得点</p>
+              <p className="text-3xl font-black text-yellow-300">{participant.score}pt</p>
+            </div>
           )}
         </div>
       </main>
     )
   }
 
+  // 投票中
   if (session.status === 'voting') {
     return (
-      <main className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-4 gap-4">
-        <div className="text-center mb-2">
-          <p className="text-white text-lg font-bold">{participant.name}</p>
-          <p className="text-gray-400 text-sm">第{session.round_number}問</p>
+      <main className="tv-bg min-h-screen flex flex-col items-center justify-center p-5 gap-5">
+        <div className="text-center">
+          <p style={{ color: '#aac0ff', fontSize: 14 }}>第{session.round_number}問 / {participant.name}</p>
         </div>
+
         {myChoice ? (
           <div className="text-center">
-            <p className="text-5xl mb-3">✅</p>
-            <p className="text-white text-2xl font-black">{myChoice} を選択しました！</p>
-            <p className="text-gray-500 text-sm mt-3">正解発表を待っています...</p>
+            <p className="text-6xl mb-4">✅</p>
+            <p className="text-white text-2xl font-black">
+              {CHOICES.find(c => c.key === myChoice)?.num} を選択！
+            </p>
+            <p className="mt-3" style={{ color: '#aac0ff' }}>正解発表を待っています...</p>
           </div>
         ) : (
           <>
-            <p className="text-white text-lg">答えを選んでください</p>
-            <div className="grid grid-cols-2 gap-4 w-full max-w-xs">
-              {Object.entries(CHOICE_COLORS).map(([choice, cls]) => (
+            <p className="text-white font-black text-xl">答えを選んでください！</p>
+            <div className="w-full max-w-sm flex flex-col gap-3">
+              {CHOICES.map(c => (
                 <button
-                  key={choice}
-                  onClick={() => vote(choice)}
-                  className={`${cls} text-white font-black text-5xl h-32 rounded-2xl transition shadow-lg`}
+                  key={c.key}
+                  onClick={() => vote(c.key)}
+                  className="choice-btn"
                 >
-                  {choice}
+                  <span
+                    className="choice-badge"
+                    style={{ background: `linear-gradient(180deg, ${c.bg} 0%, ${c.shadow} 100%)` }}
+                  >
+                    {c.num}
+                  </span>
+                  <span className="text-xl font-black">{c.key}</span>
                 </button>
               ))}
             </div>
@@ -160,24 +184,37 @@ export default function JoinPage({ params }: Props) {
     )
   }
 
+  // 正解発表
   const isCorrect = myChoice === session.correct_answer
+  const correctChoice = CHOICES.find(c => c.key === session.correct_answer)
+
   return (
     <main
       className="min-h-screen flex flex-col items-center justify-center p-4"
-      style={{ background: isCorrect ? '#166534' : '#7f1d1d' }}
+      style={{ background: isCorrect ? 'linear-gradient(160deg, #0a4a1a, #1a8a3a)' : 'linear-gradient(160deg, #4a0a0a, #8a1a1a)' }}
     >
       <div className="text-center text-white">
         <p className="text-7xl mb-4">{isCorrect ? '🎉' : '😢'}</p>
-        <h2 className="text-3xl font-black mb-2">{isCorrect ? '正解！' : '不正解...'}</h2>
-        <p className="text-xl opacity-80">
-          正解: <span className="font-black text-yellow-300">{session.correct_answer}</span>
-        </p>
-        {myChoice && <p className="text-sm opacity-70 mt-1">あなたの回答: {myChoice}</p>}
-        <div className="mt-6 bg-white bg-opacity-20 rounded-2xl px-8 py-4">
-          <p className="text-sm opacity-80">現在の得点</p>
-          <p className="text-4xl font-black">{participant.score}pt</p>
+        <h2 className="text-3xl font-black mb-3">{isCorrect ? '正解！' : '不正解...'}</h2>
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <span>正解:</span>
+          <span
+            className="choice-badge"
+            style={{ background: `linear-gradient(180deg, ${correctChoice?.bg} 0%, ${correctChoice?.shadow} 100%)`, width: 40, height: 40, fontSize: '1.1rem' }}
+          >
+            {correctChoice?.num}
+          </span>
         </div>
-        <p className="mt-6 text-sm opacity-60">次の問題を待っています...</p>
+        {myChoice && !isCorrect && (
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>
+            あなたの回答: {CHOICES.find(c => c.key === myChoice)?.num}
+          </p>
+        )}
+        <div className="mt-6 rounded-2xl px-8 py-4" style={{ background: 'rgba(255,255,255,0.2)' }}>
+          <p style={{ fontSize: 13, opacity: 0.8 }}>現在の得点</p>
+          <p className="text-4xl font-black text-yellow-300">{participant.score}pt</p>
+        </div>
+        <p className="mt-6" style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>次の問題を待っています...</p>
       </div>
     </main>
   )
