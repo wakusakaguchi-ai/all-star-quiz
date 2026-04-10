@@ -15,6 +15,7 @@ export default function HostPage({ params }: Props) {
   const [state, setState] = useState<RoomState | null>(null)
   const [loading, setLoading] = useState(false)
   const [joinUrl, setJoinUrl] = useState('')
+  const [rankingOpen, setRankingOpen] = useState(false)
 
   useEffect(() => {
     setJoinUrl(`${window.location.origin}/join/${roomCode}`)
@@ -178,9 +179,19 @@ export default function HostPage({ params }: Props) {
         )}
 
         {participants.length > 0 && (
-          <div className="bg-white rounded-2xl p-5 shadow mt-4">
-            <h2 className="font-bold text-gray-700 mb-3">ランキング</h2>
-            <Ranking participants={participants} />
+          <div className="bg-white rounded-2xl shadow mt-4">
+            <button
+              onClick={() => setRankingOpen(o => !o)}
+              className="w-full flex items-center justify-between px-5 py-4 font-bold text-gray-700 hover:bg-gray-50 rounded-2xl transition"
+            >
+              <span>ランキング</span>
+              <span>{rankingOpen ? '▲' : '▼'}</span>
+            </button>
+            {rankingOpen && (
+              <div className="px-5 pb-5">
+                <Ranking participants={participants} />
+              </div>
+            )}
           </div>
         )}
       </div>

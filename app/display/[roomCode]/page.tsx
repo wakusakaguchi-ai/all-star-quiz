@@ -10,6 +10,7 @@ type Props = { params: Promise<{ roomCode: string }> }
 export default function DisplayPage({ params }: Props) {
   const { roomCode } = use(params)
   const [state, setState] = useState<RoomState | null>(null)
+  const [rankingOpen, setRankingOpen] = useState(false)
 
   const poll = useCallback(async () => {
     const res = await fetch(`/api/sessions/${roomCode}`)
@@ -97,9 +98,19 @@ export default function DisplayPage({ params }: Props) {
         )}
 
         {participants.length > 0 && (
-          <div className="w-full max-w-2xl">
-            <h3 className="text-xl font-bold text-center mb-4">ランキング</h3>
-            <Ranking participants={participants} />
+          <div className="w-full max-w-2xl bg-white bg-opacity-10 rounded-2xl overflow-hidden">
+            <button
+              onClick={() => setRankingOpen(o => !o)}
+              className="w-full flex items-center justify-between px-6 py-4 text-white font-bold text-xl hover:bg-white hover:bg-opacity-10 transition"
+            >
+              <span>ランキング</span>
+              <span>{rankingOpen ? '▲' : '▼'}</span>
+            </button>
+            {rankingOpen && (
+              <div className="px-6 pb-6">
+                <Ranking participants={participants} />
+              </div>
+            )}
           </div>
         )}
       </div>
