@@ -63,7 +63,7 @@ export default function DisplayPage({ params }: Props) {
                 <p className="text-gray-400 mb-3">参加者 ({participants.length}名)</p>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {participants.map(p => (
-                    <span key={p.id} className="bg-white bg-opacity-10 px-4 py-2 rounded-full text-lg">{p.name}</span>
+                    <span key={p.id} className="bg-white/10 px-4 py-2 rounded-full text-lg">{p.name}</span>
                   ))}
                 </div>
               </div>
@@ -98,10 +98,10 @@ export default function DisplayPage({ params }: Props) {
         )}
 
         {participants.length > 0 && (
-          <div className="w-full max-w-2xl bg-white bg-opacity-10 rounded-2xl overflow-hidden">
+          <div className="w-full max-w-2xl bg-white/10 rounded-2xl overflow-hidden">
             <button
               onClick={() => setRankingOpen(o => !o)}
-              className="w-full flex items-center justify-between px-6 py-4 text-white font-bold text-xl hover:bg-white hover:bg-opacity-10 transition"
+              className="w-full flex items-center justify-between px-6 py-4 text-white font-bold text-xl hover:bg-white/10 transition"
             >
               <span>ランキング</span>
               <span>{rankingOpen ? '▲' : '▼'}</span>
