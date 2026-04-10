@@ -51,7 +51,7 @@ export default function DisplayPage({ params }: Props) {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center p-8">
+      <div className="flex-1 flex flex-col items-center p-8 gap-8">
         {session.status === 'waiting' && (
           <div className="text-center">
             <p className="text-6xl mb-6">📱</p>
@@ -93,10 +93,13 @@ export default function DisplayPage({ params }: Props) {
               </p>
             </div>
             <VoteBarChart counts={voteCounts} correctAnswer={session.correct_answer} total={Object.keys(votes).length} />
-            <div className="mt-8">
-              <h3 className="text-xl font-bold text-center mb-4">ランキング</h3>
-              <Ranking participants={participants} />
-            </div>
+          </div>
+        )}
+
+        {participants.length > 0 && (
+          <div className="w-full max-w-2xl">
+            <h3 className="text-xl font-bold text-center mb-4">ランキング</h3>
+            <Ranking participants={participants} />
           </div>
         )}
       </div>

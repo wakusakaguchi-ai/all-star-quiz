@@ -177,7 +177,7 @@ export default function HostPage({ params }: Props) {
           </div>
         )}
 
-        {session.status === 'revealed' && participants.length > 0 && (
+        {participants.length > 0 && (
           <div className="bg-white rounded-2xl p-5 shadow mt-4">
             <h2 className="font-bold text-gray-700 mb-3">ランキング</h2>
             <Ranking participants={participants} />
