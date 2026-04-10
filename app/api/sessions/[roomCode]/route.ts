@@ -12,7 +12,7 @@ export async function GET(_req: Request, { params }: Ctx) {
 
 export async function PATCH(req: Request, { params }: Ctx) {
   const { roomCode } = await params
-  const body = await req.json() as { action: 'start' | 'reveal'; correctAnswer?: string }
+  const body = await req.json() as { action: 'start' | 'reveal' | 'reset'; correctAnswer?: string }
 
   const state = await kv.get<RoomState>(`room:${roomCode}`)
   if (!state) return Response.json({ error: 'not found' }, { status: 404 })
@@ -41,6 +41,14 @@ export async function PATCH(req: Request, { params }: Ctx) {
     state.session.status = 'voting'
     state.session.round_number += 1
     state.session.correct_answer = null
+    state.votes = {}
+  }
+
+  if (body.action === 'reset') {
+    state.session.status = 'waiting'
+    state.session.round_number = 0
+    state.session.correct_answer = null
+    state.participants = []
     state.votes = {}
   }
 

@@ -54,6 +54,18 @@ export default function HostPage({ params }: Props) {
     setLoading(false)
   }
 
+  async function resetGame() {
+    if (!confirm('全参加者・スコア・投票をリセットしますか？')) return
+    setLoading(true)
+    const res = await fetch(`/api/sessions/${roomCode}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'reset' }),
+    })
+    setState(await res.json())
+    setLoading(false)
+  }
+
   if (!state) return <div className="min-h-screen flex items-center justify-center">読込中...</div>
 
   const { session, participants, votes } = state
@@ -79,6 +91,13 @@ export default function HostPage({ params }: Props) {
             >
               大画面表示
             </a>
+            <button
+              onClick={resetGame}
+              disabled={loading}
+              className="bg-gray-500 hover:bg-gray-600 disabled:opacity-50 text-white text-sm px-3 py-1 rounded-lg transition"
+            >
+              🔄 リセット
+            </button>
           </div>
         </div>
 
