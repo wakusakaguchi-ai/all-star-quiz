@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎉 オールスター感謝祭 集計アプリ
 
-## Getting Started
+QRコードをスキャンして参加できる、リアルタイム4択クイズ集計アプリ。
 
-First, run the development server:
+## セットアップ手順
+
+### 1. Vercel にデプロイ
+
+1. GitHubにリポジトリを作成してプッシュ
+2. [vercel.com](https://vercel.com) でリポジトリをインポート → Deploy
+
+### 2. Vercel KV を作成・リンク
+
+1. Vercel ダッシュボード → **Storage** タブ → **Create Database** → **KV**
+2. データベース名を入力（例: `all-star-quiz`）→ 作成
+3. **Connect to Project** でデプロイしたプロジェクトにリンク
+4. 自動的に環境変数（`KV_REST_API_URL` / `KV_REST_API_TOKEN`）が設定される
+5. Vercel 側で **Redeploy** を実行
+
+### 3. ローカル開発する場合
 
 ```bash
+npm i -g vercel
+vercel link        # プロジェクトとリンク
+vercel env pull    # .env.local に KV の認証情報を取得
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 使い方
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **ホスト（PC）**: トップページで「新しいゲームを作成」
+2. **大画面表示**: ホスト画面の「大画面表示」ボタンでプロジェクター用画面を開く
+3. **参加者（スマホ）**: 表示されたQRコードをスキャン → 名前入力 → 参加
+4. **投票開始**: ホスト画面で「投票開始」→ 参加者のスマホに A/B/C/D ボタンが表示
+5. **正解発表**: ホストが正解を選択 → バーグラフとランキングが表示
