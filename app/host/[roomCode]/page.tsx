@@ -114,7 +114,7 @@ export default function HostPage({ params }: Props) {
               <h3 className="font-semibold text-gray-600 text-sm mb-2">参加者 ({participants.length}名)</h3>
               <div className="flex flex-wrap gap-1">
                 {participants.map(p => (
-                  <span key={p.id} className="bg-gray-100 text-sm px-2 py-1 rounded-full">{p.name}</span>
+                  <span key={p.id} className="bg-gray-100 text-gray-900 text-sm px-2 py-1 rounded-full">{p.name}</span>
                 ))}
               </div>
             </div>
